@@ -12,11 +12,19 @@ if handle ~= versionnumber then
 	-- that will check version number
 	print("Starting to download latest version")
 	local mainfile = http.get("https://raw.githubusercontent.com/kristopherjone/kjscb/master/startup.lua") --This will make 'download' hold the contents of the file.
-	local handle = mainfile.readAll() --Reads everything in download
+	local handlemain = mainfile.readAll() --Reads everything in download
 	mainfile.close()
 	local file = fs.open("startup.lua","w") --opens the file 'startup' with the permissions to write.
-	file.write(handle) --writes all the stuff in handle to the file 'startup'.
+	file.write(handlemain) --writes all the stuff in handle to the file 'startup'.
 	file.close()
+	-- version file 
+	local mainfile = http.get("https://raw.githubusercontent.com/kristopherjone/kjscb/master/version.txt") --This will make 'download' hold the contents of the file.
+	local handlemain = mainfile.readAll() --Reads everything in download
+	mainfile.close()
+	local file = fs.open("version.txt","w") --opens the file 'startup' with the permissions to write.
+	file.write(handlemain) --writes all the stuff in handle to the file 'startup'.
+	file.close()
+	--
 	print("Done. Rebooting")
 	os.reboot()
 end
