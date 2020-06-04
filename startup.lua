@@ -1,14 +1,13 @@
 --Scoreboard system by KJO
-
 local versionnumber = 0
 local nfile = io.open( "version.txt", "r" )
 versionnumber = tostring(nfile:read("*a"))
 nfile:close()
 print("Checking for latest version")
 local download = http.get("https://raw.githubusercontent.com/kristopherjone/kjscb/master/version.txt") --This will make 'download' hold the contents of the file.
-local handle = download.readAll() --Reads everything in download
+local versionhandle = download.readAll() --Reads everything in download
 download.close()
-if handle ~= versionnumber then
+if versionhandle ~= versionnumber then
 	-- that will check version number
 	print("Starting to download latest version")
 	local mainfile = http.get("https://raw.githubusercontent.com/kristopherjone/kjscb/master/startup.lua") --This will make 'download' hold the contents of the file.
@@ -18,18 +17,16 @@ if handle ~= versionnumber then
 	file.write(handlemain) --writes all the stuff in handle to the file 'startup'.
 	file.close()
 	-- version file 
-	local mainfile = http.get("https://raw.githubusercontent.com/kristopherjone/kjscb/master/version.txt") --This will make 'download' hold the contents of the file.
-	local handlemain = mainfile.readAll() --Reads everything in download
-	mainfile.close()
 	local file = fs.open("version.txt","w") --opens the file 'startup' with the permissions to write.
-	file.write(handlemain) --writes all the stuff in handle to the file 'startup'.
+	file.write(versionhandle) --writes all the stuff in handle to the file 'startup'.
 	file.close()
 	--
 	print("Done. Rebooting")
+	sleep(1)
 	os.reboot()
 end
 print("You have latest version")
-
+term.clear()
 rs.setOutput("back",true)
 local tablo = {}
 tablo.homename = ""
