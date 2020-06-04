@@ -1,5 +1,27 @@
 --Scoreboard system by KJO
 
+local versionnumber = 0
+local nfile = io.open( "version.txt", "r" )
+versionnumber = tostring(nfile:read("*a"))
+nfile:close()
+print("Checking for latest version")
+local download = http.get("https://raw.githubusercontent.com/kristopherjone/kjscb/master/version.txt") --This will make 'download' hold the contents of the file.
+local handle = download.readAll() --Reads everything in download
+download.close()
+if handle ~= versionnumber then
+	-- that will check version number
+	print("Starting to download latest version")
+	local mainfile = http.get("https://raw.githubusercontent.com/kristopherjone/kjscb/master/startup.lua") --This will make 'download' hold the contents of the file.
+	local handle = mainfile.readAll() --Reads everything in download
+	mainfile.close()
+	local file = fs.open("startup.lua","w") --opens the file 'startup' with the permissions to write.
+	file.write(handle) --writes all the stuff in handle to the file 'startup'.
+	file.close()
+	print("Done. Rebooting")
+	os.reboot()
+end
+print("You have latest version")
+
 rs.setOutput("back",true)
 local tablo = {}
 tablo.homename = ""
@@ -110,7 +132,6 @@ function parladetablo()
 		local formattedTime = textutils.formatTime(time, true)	
 		mon.write("   ".. formattedTime .. "  ")
 		smallmon.write(formattedTime)
-		
 	else
 		mon.setTextScale(5)
 		smallmon.setTextScale(4)
