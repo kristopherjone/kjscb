@@ -1,4 +1,4 @@
---1.5.1
+--1.6.4
 --Scoreboard system by KJO
 function getLine( str, n )
   local i = 1
@@ -22,7 +22,7 @@ if tostring(getLine( handlemain, 1 )):gsub("%^--", "") ~= versionnumber then
 	-- that will check version number
 	print("Starting to download latest version")
 	local file = fs.open("startup.lua","w") --opens the file 'startup' with the permissions to write.
-	file.write(handlemain) --writes all the stuff in handle to the file 'startup'.
+	file.write(mainfile) --writes all the stuff in handle to the file 'startup'.
 	file.close()
 	print("Done. Rebooting")
 	sleep(1)
@@ -98,7 +98,7 @@ mon.setCursorPos(1,1)
 mon.write("KJ SCOREBOARD SYSTEM")
 smallmon.clear()
 term.clear()
-			print("|-----------KJ SCOREBOARD SYSTEM v".. versionhandle .."---------|")
+			print("|-----------KJ SCOREBOARD SYSTEM v".. versionnumber .."---------|")
 			print("|                                               |")
 			print("|Would you like to restore old game data?  y /n |")
 			print("|                                               |")
@@ -335,7 +335,7 @@ function main()
 
 		term.setCursorPos(1,1)
 		local input
-		print("|-KJ SCOREBOARD SYSTEM v".. versionhandle .."---|")
+		print("|-KJ SCOREBOARD SYSTEM v".. versionnumber .."---|")
 		print("|                               |")
 		print("|   INPUT COMMAND h for help    |")
 		print("|                               |")
