@@ -332,7 +332,7 @@ function main()
 
 		term.setCursorPos(1,1)
 		local input
-		print("------ KJ SCOREBOARD SYSTEM -----")
+		print("------ KJ SCOREBOARD SYSTEM v".. versionhandle .."-")
 		print("|                               |")
 		print("|   INPUT COMMAND h for help    |")
 		print("|                               |")
