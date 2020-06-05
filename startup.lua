@@ -156,11 +156,15 @@ function parladetablo()
 			local izdruka = string.format("%d",tablo.period)
 			if tablo.htimeouttaken == 1 then
 				izdruka = "*".. izdruka
+			else
+				izdruka = " ".. izdruka
 			end
 			
 			if tablo.gtimeouttaken == 1 then
 				izdruka = izdruka .. "*"
 			
+			else
+				izdruka = izdruka .. " "
 			end
 			mon.write(izdruka)  
 		else
@@ -377,11 +381,6 @@ function main()
 			tablo.breakstatus = 1
 			tablo.gtimeouttaken = 1
 			 
-		elseif fields[0] == "hp1" then -- hometeam first penalty
-			tablo.hp1p = fields[1]
-			tablo.hp1m = fields[2]
-			tablo.hp1s = fields[3]
-		 
 		elseif fields[0] == "hp" then -- hometeam first penalty
 			if fields[1] ~= nil then
 				if tonumber(fields[1]) == 1 then -- row
@@ -436,14 +435,6 @@ function main()
 				mon.clear()
 			end
 			 
-		elseif fields[0] == "dgp1" then -- setperiod
-			tablo.gp1m = 0
-			tablo.gp1s = 0
-			 
-		elseif fields[0] == "dgp2" then -- setperiod
-			tablo.gp2m = 0
-			tablo.gp2s = 0
-			 
 		elseif fields[0] == "horn" then -- setperiod
 			horn()
 		elseif fields[0] == "off" then -- setperiod
@@ -458,18 +449,6 @@ function main()
 			tablo.clockm = 10
 			tablo.clocks = 0
 			 
-		elseif fields[0] == "h" then -- setperiod
-			term.clear()
-			print("SCOREBOARD V1 HELP DESK")
-			print("st mins seconds  -- Sets main clock") 
-			print("hp1/2 number mins seconds  -- Sets home penalty") 
-			print("hs number  -- Sets home score")
-			print("gs number  -- Sets guest score")
-			print("hn text  -- Home name")
-			print("gn text  -- Guest name")
-			print("off  -- Turns off")
-			print("default  -- Default scoreboard settings")
-			sleep(6)
 		elseif fields[0] == "reset" then -- setperiod
 			term.clear()
 			print("Resetting")
