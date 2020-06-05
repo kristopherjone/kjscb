@@ -1,26 +1,29 @@
+--1.6.4
 --Scoreboard system by KJO
-local versionnumber = 0
-local nfile = io.open( "version.txt", "r" )
-versionnumber = tostring(nfile:read("*a"))
+function getLine( str, n )
+  local i = 1
+  for line in str:gmatch( "[^\r\n]+" ) do --#matches things that are not newline characters
+    if i == n then --#if we're on the line you wanted
+      return line --#return it
+    end
+    i = i + 1
+  end
+end
+local versionnumber = ""
+-- opening this file to check version of this file
+local nfile = io.open( "startup.lua", "r" )
+versionnumber = tostring(nfile:read("*l")):gsub("%^--", "") -- get version number of this file
 nfile:close()
-print("Checking for latest version")
-local download = http.get("https://raw.githubusercontent.com/kristopherjone/kjscb/master/version.txt") --This will make 'download' hold the contents of the file.
-local versionhandle = download.readAll() --Reads everything in download
-download.close()
-if versionhandle ~= versionnumber then
+-- closing, starting to check gitgub
+local mainfile = http.get("https://raw.githubusercontent.com/kristopherjone/kjscb/master/startup.lua") --This will make 'download' hold the contents of the file.
+local handlemain = mainfile.readAll() --Reads everything in download
+mainfile.close()
+if tostring(getLine( handlemain, 1 )):gsub("%^--", "") ~= versionnumber then
 	-- that will check version number
 	print("Starting to download latest version")
-	local mainfile = http.get("https://raw.githubusercontent.com/kristopherjone/kjscb/master/startup.lua") --This will make 'download' hold the contents of the file.
-	local handlemain = mainfile.readAll() --Reads everything in download
-	mainfile.close()
 	local file = fs.open("startup.lua","w") --opens the file 'startup' with the permissions to write.
-	file.write(handlemain) --writes all the stuff in handle to the file 'startup'.
+	file.write(mainfile) --writes all the stuff in handle to the file 'startup'.
 	file.close()
-	-- version file 
-	local file = fs.open("version.txt","w") --opens the file 'startup' with the permissions to write.
-	file.write(versionhandle) --writes all the stuff in handle to the file 'startup'.
-	file.close()
-	--
 	print("Done. Rebooting")
 	sleep(1)
 	os.reboot()
@@ -501,4 +504,5 @@ function horn()
 		speaker.playNote("guitar",3,20)
 	end
 end
+ 
 parallel.waitForAll(main, fixtime)
