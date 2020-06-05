@@ -22,7 +22,7 @@ if tostring(getLine( handlemain, 1 )):gsub("%^--", "") ~= versionnumber then
 	-- that will check version number
 	print("Starting to download latest version")
 	local file = fs.open("startup.lua","w") --opens the file 'startup' with the permissions to write.
-	file.write(mainfile) --writes all the stuff in handle to the file 'startup'.
+	file.write(handlemain) --writes all the stuff in handle to the file 'startup'.
 	file.close()
 	print("Done. Rebooting")
 	sleep(1)
