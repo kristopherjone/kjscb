@@ -1,4 +1,4 @@
---1.6.5
+--1.6.6
 --Scoreboard system by KJO
 function getLine( str, n )
   local i = 1
@@ -82,6 +82,15 @@ tablo.gp2time = 0
 
 --
 local monitors = {peripheral.find("monitor")} --# finding all of the monitors and putting them in a table
+ 
+if monitors[1] == nil then
+	print("NO MONITORS WHERE FOUND!!!")
+	print("You need atleast one full size monitors.")
+	print("Terminting scoreboard system.")
+	return
+	 
+end
+
 local mon = {} --# defining a table to store the functions we are about to create
  --# defining a table to store the functions we are about to create
 for k,v in pairs(monitors[1]) do --# looping through the functions of the first monitor
@@ -96,6 +105,7 @@ for k,v in pairs(monitors[1]) do --# looping through the functions of the first 
   end
 end
 local monitors = {peripheral.find("monitor")}
+ 
 local smallmon = {}
 for k,v in pairs(monitors[1]) do 
  smallmon[k] = function(...) --# creates a new function in the mon table with the name k.  k is the name of one of the functions from the monitor we are looping through
@@ -108,6 +118,12 @@ for k,v in pairs(monitors[1]) do
 		 
   end
 end
+if smallmon == nil or smallmon == '' then
+	print("NO SMALL MONITORS WHERE FOUND!!!")
+	print("You need atleast one 1 * 2 monitors added for small clocks.")
+	print("Terminting scoreboard system.")
+	return
+end 
 smallmon.setCursorPos(1,1)
 mon.setCursorPos(1,1)
 mon.write("KJ SCOREBOARD SYSTEM")
@@ -321,32 +337,44 @@ function main()
 		if fields[0] == "hn" then --homenname 
 			tablo.homename = fields[1]
 			print("Home team name set")
+			sleep(1)
 		elseif fields[0] == "gn" then --guestnname 
 			tablo.guestname = fields[1]
 			print("Guest team name set")
+			sleep(1)
 		elseif fields[0] == "hs" then --homenname 
 			tablo.hscore = fields[1]
 			print("Home score set")
+			sleep(1)
 		elseif fields[0] == "gs" then --guestnname 
 			tablo.gscore = fields[1]
 			print("Guest score set")
+			sleep(1)
 		elseif fields[0] == "sp" then -- setperiod
 			tablo.period = fields[1]
+			print("Period changed")
+			sleep(1)
 		elseif fields[0] == "st" then -- setperiod
-			tablo.mainclocktime = (fields[1] * 60) +fields[2]	 
+			tablo.mainclocktime = (fields[1] * 60) +fields[2]	
+			print("Main clock time set")
+			sleep(1)			
 		elseif fields[0] == "bt" then -- breaktime
 			tablo.breakstatus = 1
 			tablo.breakclocktime = (fields[1] * 60) +fields[2]
+			print("Break clock time set, starting break time")
+			sleep(1)	
 		elseif fields[0] == "hto" then -- breaktime
 			tablo.breakclocktime = 30
 			tablo.breakstatus = 1
 			tablo.htimeouttaken = 1
-			 
+			print("Home team timeout has been started")
+			sleep(1)	 
 		elseif fields[0] == "gto" then -- breaktime
 			tablo.breakclocktime = 30
 			tablo.breakstatus = 1
 			tablo.gtimeouttaken = 1
-			 
+			print("Guest team timeout has been started")
+			sleep(1) 
 		elseif fields[0] == "hp" then -- hometeam first penalty
 			if fields[1] ~= nil then
 				if tonumber(fields[1]) == 1 then -- row
@@ -382,13 +410,21 @@ function main()
 				sleep(2)
 			end
 		elseif fields[0] == "dhp1" then -- setperiod
-			tablo.hp1time = 0		 
+			tablo.hp1time = 0	
+			print("Home team first penalty removed")
+			sleep(1)
 		elseif fields[0] == "dhp2" then -- setperiod
-			tablo.hp2time = 0		 
+			tablo.hp2time = 0
+			print("Home team second penalty removed")
+			sleep(1)			
 		elseif fields[0] == "dgp1" then -- setperiod
-			tablo.gp1time = 0		 
+			tablo.gp1time = 0
+			print("Guest team first penalty removed")
+			sleep(1)
 		elseif fields[0] == "dgp2" then -- setperiod
-			tablo.gp2time = 0		 
+			tablo.gp2time = 0
+			print("Guest team second penalty removed")
+			sleep(1)			
 		elseif fields[0] == "realtime" then -- setperiod
 			if tablo.realclock == 1 then
 				tablo.realclock = 0
@@ -396,48 +432,42 @@ function main()
 				tablo.realclock = 1
 				mon.clear()
 			end
-			 
+			print("Clearing scoreboard, showing real time")
+			sleep(1) 
 		elseif fields[0] == "horn" then -- setperiod
 			horn()
 		elseif fields[0] == "off" then -- setperiod
+			print("Shutting down")
+			sleep(1)
 			term.clear()
 			mon.clear()
 			smallmon.clear()
 			os.shutdown()
-		elseif fields[0] == "default" then -- setperiod
-			tablo.homename = "HOME"
-			tablo.guestname = "GUEST"
-			tablo.period = "1"
-			tablo.clockm = 10
-			tablo.clocks = 0
-			 
 		elseif fields[0] == "reset" then -- setperiod
 			term.clear()
 			print("Resetting")
-			 tablo.homename = ""
-			 tablo.guestname = ""
-			 tablo.clockm = 0
-			 tablo.clocks = 0
-			 tablo.hscore = 0
-			 tablo.gscore = 0
-			 tablo.period = 0
-			 tablo.runclock = 0
-			 tablo.awaitstart = 0
-			 tablo.breakstatus = 0
-			 tablo.breakm = 0
-			 tablo.breaks = 0
-			 tablo.hp1p = 0
-			 tablo.hp1m = 0
-			 tablo.hp1s = 0		
-			 tablo.gp1p = 0
-			 tablo.gp1m = 0
-			 tablo.gp1s = 0		
-			 tablo.hp2p = 0
-			 tablo.hp2m = 0
-			 tablo.hp2s = 0		
-			 tablo.gp2p = 0
-			 tablo.gp2m = 0
-			 tablo.gp2s = 0 
+			tablo.homename = ""
+			tablo.guestname = ""
+			tablo.mainclocktime = 0
+			tablo.breakclocktime = 0
+			tablo.hscore = 0
+			tablo.gscore = 0
+			tablo.period = 0
+			tablo.runclock = 0
+			tablo.awaitstart = 0
+			tablo.breakstatus = 0	 
+			tablo.taim = 0
+			tablo.realclock = 0
+			tablo.htimeouttaken = 0
+			tablo.gtimeouttaken = 0
+			tablo.hp1p = 0
+			tablo.hp1time = 0
+			tablo.gp1p = 0
+			tablo.gp1time = 0
+			tablo.hp2p = 0
+			tablo.hp2time = 0
+			tablo.gp2p = 0
+			tablo.gp2time = 0
 			sleep(1)
 		else
 			print("Wrong command!")
