@@ -1,4 +1,4 @@
---1.6.4
+--1.6.5
 --Scoreboard system by KJO
 function getLine( str, n )
   local i = 1
@@ -9,7 +9,25 @@ function getLine( str, n )
     i = i + 1
   end
 end
+function SecondsToClock(seconds,minutesnozero)
+  local seconds = tonumber(seconds)
+
+  if seconds <= 0 then
+    return "00:00";
+  else
+    hours = string.format("%02.f", math.floor(seconds/3600));
+	if minutesnozero == 1 then
+		mins = string.format("%d", math.floor(seconds/60 - (hours*60)));
+	else
+		mins = string.format("%02d", math.floor(seconds/60 - (hours*60)));
+	end
+   
+    secs = string.format("%02d", math.floor(seconds - hours*3600 - mins *60));
+    return mins..":"..secs
+  end
+end
 local versionnumber = ""
+print("Checking for latest version")
 -- opening this file to check version of this file
 local nfile = io.open( "startup.lua", "r" )
 versionnumber = tostring(nfile:read("*l")):gsub("%^--", "") -- get version number of this file
@@ -28,43 +46,40 @@ if tostring(getLine( handlemain, 1 )):gsub("%^--", "") ~= versionnumber then
 	sleep(1)
 	os.reboot()
 end
-print("You have latest version")
+print("You have latest version. Starting scoreboard")
+sleep(1)
 term.clear()
 rs.setOutput("back",true)
 local tablo = {}
 tablo.homename = ""
 tablo.guestname = ""
-tablo.clockm = 0
-tablo.clocks = 0
+tablo.mianclocktime = 0
+tablo.breakclocktime = 0
+
 tablo.hscore = 0
 tablo.gscore = 0
 tablo.period = 0
 tablo.runclock = 0
 tablo.awaitstart = 0
 tablo.breakstatus = 0
-tablo.breakm = 0
-tablo.breaks = 0
-tablo.tsep = ""
+ 
 tablo.taim = 0
 tablo.realclock = 0
 tablo.htimeouttaken = 0
 tablo.gtimeouttaken = 0
 
 tablo.hp1p = 0
-tablo.hp1m = 0
-tablo.hp1s = 0
+tablo.hp1time = 0
 
 tablo.gp1p = 0
-tablo.gp1m = 0
-tablo.gp1s = 0
+tablo.gp1time = 0
 
 tablo.hp2p = 0
-tablo.hp2m = 0
-tablo.hp2s = 0
+tablo.hp2time = 0
 
 tablo.gp2p = 0
-tablo.gp2m = 0
-tablo.gp2s = 0
+tablo.gp2time = 0
+
 --
 local monitors = {peripheral.find("monitor")} --# finding all of the monitors and putting them in a table
 local mon = {} --# defining a table to store the functions we are about to create
@@ -128,8 +143,6 @@ sleep(1)
 mon.clear()
 term.clear()
 function parladetablo()
-
- 
 	if tablo.realclock == 1 then
 		local MCTicks = (os.time() * 1000 + 18000)%24000
 		mon.setTextScale(5)
@@ -175,48 +188,39 @@ function parladetablo()
 		end
 		mon.setTextColor(colors.white)
 		mon.setCursorPos(6,5) 
-		if tonumber(tablo.runclock) == 0 then
-			tablo.tsep = "."
-		else
-			tablo.tsep = ":"
-			if tablo.clocks % 2 == 0 then
-				tablo.tsep = " "
-			end
-		end	
 		if tablo.breakstatus == 0 then
 			mon.setTextColor(colors.red)
-			tablo.taim = string.format("%02d%s%02d",tablo.clockm,tablo.tsep,tablo.clocks)
+			tablo.taim = SecondsToClock(tablo.mianclocktime)
 		else
 			mon.setTextColor(colors.green)
-			tablo.taim = string.format("%02d%s%02d",tablo.breakm,tablo.tsep,tablo.breaks)
+			tablo.taim = SecondsToClock(tablo.breakclocktime)
 		end
 		mon.write(tablo.taim)
 		smallmon.write(tablo.taim)
 		 -- penalty clocks
 		mon.setCursorPos(1,7) 
 		mon.setTextColor(colors.red)
-		if tonumber(tablo.hp1m) > 0  or tonumber(tablo.hp1s) > 0 then
-			mon.write(string.format("%02d %d:%02d",tablo.hp1p,tablo.hp1m,tablo.hp1s))
+		if tonumber(tablo.hp1time) > 0 then
+			mon.write(string.format("%02d %s",tablo.hp1p,SecondsToClock(tablo.hp1time,1)))
 		else
 			mon.write("           ")  
 		end
 		mon.setCursorPos(1,8) 
-		if tonumber(tablo.hp2m) > 0  or tonumber(tablo.hp2s) > 0 then
-			mon.write(string.format("%02d %d:%02d",tablo.hp2p,tablo.hp2m,tablo.hp2s))
+		if tonumber(tablo.hp2time) > 0 then
+			mon.write(string.format("%02d %s",tablo.hp2p,SecondsToClock(tablo.hp2time,1)))
 		else
 			mon.write("           ")  
-		end 
-		
+		end
 		mon.setCursorPos(10,7) 
 		mon.setTextColor(colors.red)
-		if tonumber(tablo.gp1m) > 0  or tonumber(tablo.gp1s) > 0 then
-			mon.write(string.format("%02d %d:%02d",tablo.gp1p,tablo.gp1m,tablo.gp1s))
+		if tonumber(tablo.gp1time) > 0 then
+			mon.write(string.format("%02d %s",tablo.gp1p,SecondsToClock(tablo.gp1time,1)))
 		else
 			mon.write("                ")  
 		end
 		mon.setCursorPos(10,8) 
-		if tonumber(tablo.gp2m) > 0  or tonumber(tablo.gp2s) > 0 then
-			mon.write(string.format("%02d %d:%02d",tablo.gp2p,tablo.gp2m,tablo.gp2s))
+		if tonumber(tablo.gp2time) > 0  then
+			mon.write(string.format("%02d %s",tablo.gp2p,SecondsToClock(tablo.gp2time,1)))
 		else
 			mon.write("                ")  
 		end
@@ -239,87 +243,53 @@ function fixtime()
 	   end
 		if tablo.breakstatus == 0 and tablo.runclock == 1 then
 			rs.setOutput("back",false)
-			if tonumber(tablo.clockm) == 0 and tonumber(tablo.clocks) == 0 then
+			if tonumber(tablo.mianclocktime)  == 0 then
 					if tablo.runclock == 1 then
 						horn()
 					end
 				tablo.runclock = 0
-				 
-			elseif tonumber(tablo.clocks) == 0 and  tonumber(tablo.clockm) > 0 then 
-				tablo.clockm = tablo.clockm - 1
-				tablo.clocks = 59
 			else
-				tablo.clocks = tablo.clocks - 1
+				tablo.mianclocktime = tablo.mianclocktime - 1
 			end
 			-- hp 1
-			if tonumber(tablo.hp1m) > 0 or tonumber(tablo.hp1s) > 0 then
-				if tonumber(tablo.hp1s) == 0 and  tonumber(tablo.hp1m) > 0 then 
-					tablo.hp1m = tablo.hp1m - 1
-					tablo.hp1s = 59
-				else
-					tablo.hp1s = tablo.hp1s - 1
-				end
+			if tonumber(tablo.hp1time) > 0 then
+				tablo.hp1time = tablo.hp1time - 1
 			else
-				tablo.hp1s = 0 
-				tablo.hp1m = 0
+				tablo.hp1time = 0
 			end
 			--hp2
-			if tonumber(tablo.hp2m) > 0 or tonumber(tablo.hp2s) > 0 then
-				if tonumber(tablo.hp2s) == 0 and  tonumber(tablo.hp2m) > 0 then 
-					tablo.hp2m = tablo.hp2m - 1
-					tablo.hp2s = 59
-				else
-					tablo.hp2s = tablo.hp2s - 1
-				end
+			if tonumber(tablo.hp2time) > 0 then
+				tablo.hp2time = tablo.hp1time - 1
 			else
-				tablo.hp2s = 0 
-				tablo.hp2m = 0
+				tablo.hp2time = 0
 			end
 			
 			-- gp 1
-			if tonumber(tablo.gp1m) > 0 or tonumber(tablo.gp1s) > 0 then
-				if tonumber(tablo.gp1s) == 0 and  tonumber(tablo.gp1m) > 0 then 
-					tablo.gp1m = tablo.gp1m - 1
-					tablo.gp1s = 59
-				else
-					tablo.gp1s = tablo.gp1s - 1
-				end
+			if tonumber(tablo.gp1time) > 0 then
+				tablo.gp1time = tablo.gp1time - 1
 			else
-				tablo.gp1s = 0 
-				tablo.gp1m = 0
+				tablo.gp1time = 0
 			end
 			--gp2
-			if tonumber(tablo.gp2m) > 0 or tonumber(tablo.gp2s) > 0 then
-				if tonumber(tablo.gp2s) == 0 and  tonumber(tablo.gp2m) > 0 then 
-					tablo.gp2m = tablo.gp2m - 1
-					tablo.gp2s = 59
-				else
-					tablo.gp2s = tablo.gp2s - 1
-				end
+			if tonumber(tablo.gp2time) > 0 then
+				tablo.gp2time = tablo.gp2time - 1
 			else
-				tablo.gp2s = 0 
-				tablo.gp2m = 0
+				tablo.gp2time = 0
 			end
 			sleep(1)
 		else
 			rs.setOutput("back",true)
-			if tonumber(tablo.breakm) == 0 and tonumber(tablo.breaks) == 0 then
+			if tonumber(tablo.breakclocktime)  == 0 then
 				if tablo.breakstatus == 1 then
 						horn()
 					if tonumber(tablo.period) == 0 then
 						tablo.period = 1 -- its pregame
 					end
-				end
-				 
+				end				 
 				tablo.breakstatus = 0
 				tablo.runclock = 0
-			 
-				 
-			elseif tonumber(tablo.breaks) == 0 and  tonumber(tablo.breakm) > 0 then 
-				tablo.breakm = tablo.breakm - 1
-				tablo.breaks = 59
-			else
-				tablo.breaks = tablo.breaks - 1
+			elseif tonumber(tablo.breakclocktime) > 0 then 
+				tablo.breakclocktime = tablo.breakclocktime -1
 			end
 			sleep(1)
 		end
@@ -362,25 +332,18 @@ function main()
 			print("Guest score set")
 		elseif fields[0] == "sp" then -- setperiod
 			tablo.period = fields[1]
-			 
 		elseif fields[0] == "st" then -- setperiod
-			tablo.clockm = fields[1]
-			tablo.clocks = fields[2]
-			 
+			tablo.mianclocktime = (fields[1] * 60) +fields[2]	 
 		elseif fields[0] == "bt" then -- breaktime
-			tablo.breakm = fields[1]
-			tablo.breaks = fields[2]
 			tablo.breakstatus = 1
-			 
+			tablo.breakclocktime = (fields[1] * 60) +fields[2]
 		elseif fields[0] == "hto" then -- breaktime
-			tablo.breakm = 0
-			tablo.breaks = 30
+			tablo.breakclocktime = 30
 			tablo.breakstatus = 1
 			tablo.htimeouttaken = 1
 			 
 		elseif fields[0] == "gto" then -- breaktime
-			tablo.breakm = 0
-			tablo.breaks = 30
+			tablo.breakclocktime = 30
 			tablo.breakstatus = 1
 			tablo.gtimeouttaken = 1
 			 
@@ -388,12 +351,10 @@ function main()
 			if fields[1] ~= nil then
 				if tonumber(fields[1]) == 1 then -- row
 					tablo.hp1p = (fields[2] ~= nil) and fields[2] or 0
-					tablo.hp1m = (fields[3] ~= nil) and fields[3] or 2 -- default - 2 mins
-					tablo.hp1s = (fields[4] ~= nil) and fields[4] or 0
+					tablo.hp1time = (fields[3] * 60) + fields[4]
 				elseif tonumber(fields[1]) == 2 then
 					tablo.hp2p = (fields[2] ~= nil) and fields[2] or 0
-					tablo.hp2m = (fields[3] ~= nil) and fields[3] or 2 -- default - 2 mins
-					tablo.hp2s = (fields[4] ~= nil) and fields[4] or 0	 
+					tablo.hp2time = (fields[3] * 60) + fields[4]
 				else
 					print ("1 or 2 !!! ")
 				end
@@ -407,12 +368,10 @@ function main()
 			if fields[1] ~= nil then
 				if tonumber(fields[1]) == 1 then -- row
 					tablo.gp1p = (fields[2] ~= nil) and fields[2] or 0
-					tablo.gp1m = (fields[3] ~= nil) and fields[3] or 2 -- default - 2 mins
-					tablo.gp1s = (fields[4] ~= nil) and fields[4] or 0
+					tablo.gp1time = (fields[3] * 60) + fields[4]
 				elseif tonumber(fields[1]) == 2 then
 					tablo.gp2p = (fields[2] ~= nil) and fields[2] or 0
-					tablo.gp2m = (fields[3] ~= nil) and fields[3] or 2 -- default - 2 mins
-					tablo.gp2s = (fields[4] ~= nil) and fields[4] or 0	 
+					tablo.gpt2ime = (fields[3] * 60) + fields[4] 
 				else
 					print ("1 or 2 !!! ")
 				end
@@ -423,13 +382,13 @@ function main()
 				sleep(2)
 			end
 		elseif fields[0] == "dhp1" then -- setperiod
-			tablo.hp1m = 0
-			tablo.hp1s = 0
-			 
+			tablo.hp1time = 0		 
 		elseif fields[0] == "dhp2" then -- setperiod
-			tablo.hp2m = 0
-			tablo.hp2s = 0
-			 
+			tablo.hp2time = 0		 
+		elseif fields[0] == "dgp1" then -- setperiod
+			tablo.gp1time = 0		 
+		elseif fields[0] == "dgp2" then -- setperiod
+			tablo.gp2time = 0		 
 		elseif fields[0] == "realtime" then -- setperiod
 			if tablo.realclock == 1 then
 				tablo.realclock = 0
