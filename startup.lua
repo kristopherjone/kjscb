@@ -53,7 +53,7 @@ rs.setOutput("back",true)
 local tablo = {}
 tablo.homename = ""
 tablo.guestname = ""
-tablo.mianclocktime = 0
+tablo.mainclocktime = 0
 tablo.breakclocktime = 0
 
 tablo.hscore = 0
@@ -190,7 +190,7 @@ function parladetablo()
 		mon.setCursorPos(6,5) 
 		if tablo.breakstatus == 0 then
 			mon.setTextColor(colors.red)
-			tablo.taim = SecondsToClock(tablo.mianclocktime)
+			tablo.taim = SecondsToClock(tablo.mainclocktime)
 		else
 			mon.setTextColor(colors.green)
 			tablo.taim = SecondsToClock(tablo.breakclocktime)
@@ -243,13 +243,13 @@ function fixtime()
 	   end
 		if tablo.breakstatus == 0 and tablo.runclock == 1 then
 			rs.setOutput("back",false)
-			if tonumber(tablo.mianclocktime)  == 0 then
+			if tonumber(tablo.mainclocktime)  == 0 then
 					if tablo.runclock == 1 then
 						horn()
 					end
 				tablo.runclock = 0
 			else
-				tablo.mianclocktime = tablo.mianclocktime - 1
+				tablo.mainclocktime = tablo.mainclocktime - 1
 			end
 			-- hp 1
 			if tonumber(tablo.hp1time) > 0 then
@@ -333,7 +333,7 @@ function main()
 		elseif fields[0] == "sp" then -- setperiod
 			tablo.period = fields[1]
 		elseif fields[0] == "st" then -- setperiod
-			tablo.mianclocktime = (fields[1] * 60) +fields[2]	 
+			tablo.mainclocktime = (fields[1] * 60) +fields[2]	 
 		elseif fields[0] == "bt" then -- breaktime
 			tablo.breakstatus = 1
 			tablo.breakclocktime = (fields[1] * 60) +fields[2]
